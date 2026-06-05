@@ -55,7 +55,12 @@ impl SecretSource for SecretServiceSource {
                 kind: String::from("Password"),
                 source: String::from("Secret Service"),
                 updated_at: DateTime::from_timestamp(secret_item.get_modified().await? as i64, 0)
-                    .map(|timestamp| timestamp.with_timezone(&Local).to_string())
+                    .map(|timestamp| {
+                        timestamp
+                            .with_timezone(&Local)
+                            .format("%Y-%m-%d %H:%M")
+                            .to_string()
+                    })
                     .unwrap_or_else(|| String::from("unknown")),
                 tags: vec![],
             });
