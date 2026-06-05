@@ -3,7 +3,7 @@ use ratatui::{
     layout::{Constraint, Direction, Layout, Margin},
     style::{Color, Modifier, Style},
     text::{Line, Span},
-    widgets::{Block, List, ListItem, ListState, Paragraph},
+    widgets::{Block, List, ListItem, ListState, Paragraph, Wrap},
 };
 
 const ITEM_NAME_MAX_CHARS: usize = 24;
@@ -194,7 +194,9 @@ pub fn render(frame: &mut Frame, app: &App) {
         .constraints([Constraint::Length(1), Constraint::Min(0)])
         .split(columns[2].inner(Margin::new(1, 0)));
 
-    let details_panel = Paragraph::new(details_lines).block(Block::default());
+    let details_panel = Paragraph::new(details_lines)
+        .wrap(Wrap { trim: false })
+        .block(Block::default());
 
     frame.render_widget(details_header, details_layout[0]);
     frame.render_widget(details_panel, details_layout[1]);
