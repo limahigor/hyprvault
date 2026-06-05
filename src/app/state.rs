@@ -2,6 +2,8 @@ use color_eyre::{Result, eyre::eyre};
 
 use crate::data::SecretSource;
 
+const HIDDEN_SECRET: &str = "************";
+
 #[derive(Clone, Debug, Default)]
 pub struct SecretCollection {
     pub id: String,
@@ -18,11 +20,13 @@ pub struct SecretAttribute {
 #[derive(Clone, Debug, Default)]
 pub struct SecretItem {
     pub collection_id: String,
+    pub item_key: String,
     pub name: String,
     pub kind: String,
     pub source: String,
     pub updated_at: String,
     pub secret_preview: String,
+    pub is_secret_visible: bool,
     pub attributes: Vec<SecretAttribute>,
 }
 
@@ -58,6 +62,7 @@ impl App {
             return;
         }
 
+        self.hide_visible_secret();
         self.selected_item_index = (self.selected_item_index + 1) % self.items.len();
     }
 
@@ -65,6 +70,8 @@ impl App {
         if self.items.is_empty() {
             return;
         }
+
+        self.hide_visible_secret();
 
         if self.selected_item_index == 0 {
             self.selected_item_index = self.items.len() - 1;
@@ -74,12 +81,15 @@ impl App {
     }
 
     pub async fn reload_items(&mut self, source: &dyn SecretSource) -> Result<()> {
+        self.hide_visible_secret();
+
         let collection = self
             .selected_collection()
             .ok_or_else(|| eyre!("no collection selected"))?
             .clone();
 
         self.items = source.load_items(&collection).await?;
+        self.selected_item_index = 0;
 
         Ok(())
     }
@@ -91,7 +101,6 @@ impl App {
 
         self.selected_collection_index =
             (self.selected_collection_index + 1) % self.collections.len();
-        self.selected_item_index = 0;
 
         self.reload_items(source).await
     }
@@ -106,8 +115,6 @@ impl App {
         } else {
             self.selected_collection_index -= 1;
         }
-
-        self.selected_item_index = 0;
 
         self.reload_items(source).await
     }
@@ -140,6 +147,39 @@ impl App {
     }
 
     pub fn selected_item(&self) -> Option<&SecretItem> {
-        self.filtered_items().get(self.selected_item_index).copied()
+        self.items.get(self.selected_item_index)
+    }
+
+    pub async fn toggle_secret(&mut self, source: &dyn SecretSource) -> Result<()> {
+        let collection = self
+            .selected_collection()
+            .ok_or_else(|| eyre!("no collection selected"))?
+            .clone();
+
+        let item = self
+            .items
+            .get_mut(self.selected_item_index)
+            .ok_or_else(|| eyre!("no item selected"))?;
+
+        if item.is_secret_visible {
+            item.secret_preview = String::from(HIDDEN_SECRET);
+            item.is_secret_visible = false;
+            return Ok(());
+        }
+
+        let secret = source.get_secret(&collection, item).await?;
+        item.secret_preview = secret;
+        item.is_secret_visible = true;
+
+        Ok(())
+    }
+
+    fn hide_visible_secret(&mut self) {
+        if let Some(item) = self.items.get_mut(self.selected_item_index)
+            && item.is_secret_visible
+        {
+            item.secret_preview = String::from(HIDDEN_SECRET);
+            item.is_secret_visible = false;
+        }
     }
 }

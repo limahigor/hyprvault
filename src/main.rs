@@ -61,6 +61,7 @@ async fn run_app(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Resul
                 KeyCode::Char('l') | KeyCode::Right => app.next_collection(&source).await?,
                 KeyCode::Down | KeyCode::Char('j') => app.next(),
                 KeyCode::Up | KeyCode::Char('k') => app.previous(),
+                KeyCode::Char('s') => app.toggle_secret(&source).await?,
                 _ => {}
             }
         }

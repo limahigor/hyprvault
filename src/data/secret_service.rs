@@ -11,6 +11,8 @@ use crate::{
     data::source::SecretSource,
 };
 
+const HIDDEN_SECRET: &str = "************";
+
 #[derive(Debug, Default)]
 pub struct SecretServiceSource;
 
@@ -53,9 +55,11 @@ impl SecretSource for SecretServiceSource {
         for secret_item in secret_items {
             let raw_attributes = secret_item.get_attributes().await?;
             let attributes = presentable_attributes(raw_attributes);
+            let item_key = secret_item.item_path.to_string();
 
             items.push(SecretItem {
                 collection_id: collection.id.clone(),
+                item_key,
                 name: secret_item.get_label().await?,
                 kind: String::from("Password"),
                 source: String::from("Secret Service"),
@@ -67,12 +71,27 @@ impl SecretSource for SecretServiceSource {
                             .to_string()
                     })
                     .unwrap_or_else(|| String::from("unknown")),
-                secret_preview: String::from("************"),
+                secret_preview: String::from(HIDDEN_SECRET),
+                is_secret_visible: false,
                 attributes,
             });
         }
 
         Ok(items)
+    }
+
+    async fn get_secret(
+        &self,
+        _collection: &SecretCollection,
+        item: &SecretItem,
+    ) -> Result<String> {
+        let service = SecretService::connect(EncryptionType::Dh).await?;
+        let path: OwnedObjectPath = item.item_key.as_str().try_into()?;
+        let secret_item = service.get_item_by_path(path).await?;
+        let secret_bytes = secret_item.get_secret().await?;
+        let secret = String::from_utf8(secret_bytes)?;
+
+        Ok(secret)
     }
 }
 

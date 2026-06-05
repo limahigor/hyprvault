@@ -7,4 +7,5 @@ use crate::app::state::{SecretCollection, SecretItem};
 pub trait SecretSource {
     async fn load_collections(&self) -> Result<Vec<SecretCollection>>;
     async fn load_items(&self, collection: &SecretCollection) -> Result<Vec<SecretItem>>;
+    async fn get_secret(&self, collection: &SecretCollection, item: &SecretItem) -> Result<String>;
 }
