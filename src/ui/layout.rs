@@ -7,6 +7,7 @@ use ratatui::{
 };
 
 const ITEM_NAME_MAX_CHARS: usize = 24;
+const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 use crate::app::App;
 
@@ -33,12 +34,18 @@ pub fn render(frame: &mut Frame, app: &App) {
         ])
         .split(vertical[1]);
 
-    let header = Paragraph::new(Line::from(vec![Span::styled(
-        "HyprVault",
-        Style::default()
-            .fg(Color::Cyan)
-            .add_modifier(Modifier::BOLD),
-    )]));
+    let header = Paragraph::new(Line::from(vec![
+        Span::styled(
+            "HyprVault",
+            Style::default()
+                .fg(Color::Cyan)
+                .add_modifier(Modifier::BOLD),
+        ),
+        Span::styled(
+            format!("  v{}", APP_VERSION),
+            Style::default().fg(Color::DarkGray),
+        ),
+    ]));
 
     frame.render_widget(header, vertical[0]);
 
