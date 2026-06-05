@@ -1,3 +1,5 @@
+use std::process::{Command, Stdio};
+
 use color_eyre::{Result, eyre::eyre};
 
 use crate::data::SecretSource;
@@ -36,6 +38,27 @@ pub struct App {
     items: Vec<SecretItem>,
     selected_collection_index: usize,
     selected_item_index: usize,
+}
+
+fn copy_to_clipboard(text: &str) -> Result<()> {
+    let mut child = Command::new("wl-copy").stdin(Stdio::piped()).spawn()?;
+
+    let mut stdin = child
+        .stdin
+        .take()
+        .ok_or_else(|| eyre!("failed to open wl-copy stdin"))?;
+
+    use std::io::Write as _;
+    stdin.write_all(text.as_bytes())?;
+    drop(stdin);
+
+    let status = child.wait()?;
+
+    if !status.success() {
+        return Err(eyre!("wl-copy failed"));
+    }
+
+    Ok(())
 }
 
 impl App {
@@ -151,27 +174,43 @@ impl App {
     }
 
     pub async fn toggle_secret(&mut self, source: &dyn SecretSource) -> Result<()> {
-        let collection = self
-            .selected_collection()
-            .ok_or_else(|| eyre!("no collection selected"))?
-            .clone();
+        if self
+            .items
+            .get(self.selected_item_index)
+            .ok_or_else(|| eyre!("no item selected"))?
+            .is_secret_visible
+        {
+            self.hide_visible_secret();
+            return Ok(());
+        }
 
+        let secret = self.selected_secret(source).await?;
         let item = self
             .items
             .get_mut(self.selected_item_index)
             .ok_or_else(|| eyre!("no item selected"))?;
 
-        if item.is_secret_visible {
-            item.secret_preview = String::from(HIDDEN_SECRET);
-            item.is_secret_visible = false;
-            return Ok(());
-        }
-
-        let secret = source.get_secret(&collection, item).await?;
         item.secret_preview = secret;
         item.is_secret_visible = true;
 
         Ok(())
+    }
+
+    pub async fn copy_secret_clipboard(&self, source: &dyn SecretSource) -> Result<()> {
+        let secret = self.selected_secret(source).await?;
+        copy_to_clipboard(&secret)
+    }
+
+    async fn selected_secret(&self, source: &dyn SecretSource) -> Result<String> {
+        let collection = self
+            .selected_collection()
+            .ok_or_else(|| eyre!("no collection selected"))?;
+        let item = self
+            .items
+            .get(self.selected_item_index)
+            .ok_or_else(|| eyre!("no item selected"))?;
+
+        source.get_secret(collection, item).await
     }
 
     fn hide_visible_secret(&mut self) {
