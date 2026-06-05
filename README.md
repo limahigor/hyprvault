@@ -28,6 +28,15 @@ cd hyprvault
 cargo run
 ```
 
+## 📦 Installation
+
+```bash
+tar -xzf hyprvault_<version>_linux_x86_64.tar.gz
+cd hyprvault_<version>_linux_x86_64
+sudo install -Dm755 hyprvault /usr/local/bin/hyprvault
+hyprvault
+```
+
 ## ⌨️ Keybindings
 
 | Key | Action |
