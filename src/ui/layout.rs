@@ -12,13 +12,15 @@ use crate::app::App;
 
 pub fn render(frame: &mut Frame, app: &App) {
     let root = frame.area();
+    let show_clipboard_notice = app.show_clipboard_notice();
 
     let vertical = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Length(2),
             Constraint::Min(0),
-            Constraint::Length(2),
+            Constraint::Length(1),
+            Constraint::Length(1),
         ])
         .split(root);
 
@@ -209,20 +211,43 @@ pub fn render(frame: &mut Frame, app: &App) {
     frame.render_widget(details_header, details_layout[0]);
     frame.render_widget(details_panel, details_layout[1]);
 
-    let footer = Paragraph::new(Line::from(vec![
-        Span::styled("h/l", Style::default().fg(Color::White)),
-        Span::styled(" collections  ", Style::default().fg(Color::DarkGray)),
-        Span::styled("j/k", Style::default().fg(Color::White)),
-        Span::styled(" items  ", Style::default().fg(Color::DarkGray)),
-        Span::styled("s", Style::default().fg(Color::White)),
-        Span::styled(" show secret  ", Style::default().fg(Color::DarkGray)),
-        Span::styled("c", Style::default().fg(Color::White)),
-        Span::styled(" copy secret  ", Style::default().fg(Color::DarkGray)),
-        Span::styled("q", Style::default().fg(Color::White)),
-        Span::styled(" quit", Style::default().fg(Color::DarkGray)),
-    ]));
+    if show_clipboard_notice {
+        let status = Paragraph::new(Line::from(vec![
+            Span::styled(
+                " OKAY ",
+                Style::default()
+                    .fg(Color::Black)
+                    .bg(Color::Rgb(67, 153, 167))
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Span::styled(
+                "  Copied to clipboard",
+                Style::default()
+                    .fg(Color::White)
+                    .bg(Color::Rgb(47, 114, 125))
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Span::styled(" ", Style::default().bg(Color::Rgb(47, 114, 125))),
+        ]))
+        .style(Style::default().bg(Color::Rgb(47, 114, 125)));
 
-    frame.render_widget(footer, vertical[2]);
+        frame.render_widget(status, vertical[2]);
+    } else {
+        let footer = Paragraph::new(Line::from(vec![
+            Span::styled("h/l", Style::default().fg(Color::White)),
+            Span::styled(" collections  ", Style::default().fg(Color::DarkGray)),
+            Span::styled("j/k", Style::default().fg(Color::White)),
+            Span::styled(" items  ", Style::default().fg(Color::DarkGray)),
+            Span::styled("s", Style::default().fg(Color::White)),
+            Span::styled(" show secret  ", Style::default().fg(Color::DarkGray)),
+            Span::styled("c", Style::default().fg(Color::White)),
+            Span::styled(" copy secret  ", Style::default().fg(Color::DarkGray)),
+            Span::styled("q", Style::default().fg(Color::White)),
+            Span::styled(" quit", Style::default().fg(Color::DarkGray)),
+        ]));
+
+        frame.render_widget(footer, vertical[2]);
+    }
 }
 
 fn truncate_text(value: &str, max_chars: usize) -> String {

@@ -1,4 +1,7 @@
-use std::process::{Command, Stdio};
+use std::{
+    process::{Command, Stdio},
+    time::{Duration, Instant},
+};
 
 use color_eyre::{Result, eyre::eyre};
 
@@ -38,6 +41,7 @@ pub struct App {
     items: Vec<SecretItem>,
     selected_collection_index: usize,
     selected_item_index: usize,
+    clipboard_notice_until: Option<Instant>,
 }
 
 fn copy_to_clipboard(text: &str) -> Result<()> {
@@ -77,6 +81,7 @@ impl App {
             items,
             selected_collection_index: 0,
             selected_item_index: 0,
+            clipboard_notice_until: None,
         })
     }
 
@@ -173,6 +178,11 @@ impl App {
         self.items.get(self.selected_item_index)
     }
 
+    pub fn show_clipboard_notice(&self) -> bool {
+        self.clipboard_notice_until
+            .is_some_and(|deadline| Instant::now() <= deadline)
+    }
+
     pub async fn toggle_secret(&mut self, source: &dyn SecretSource) -> Result<()> {
         if self
             .items
@@ -196,9 +206,12 @@ impl App {
         Ok(())
     }
 
-    pub async fn copy_secret_clipboard(&self, source: &dyn SecretSource) -> Result<()> {
+    pub async fn copy_secret_clipboard(&mut self, source: &dyn SecretSource) -> Result<()> {
         let secret = self.selected_secret(source).await?;
-        copy_to_clipboard(&secret)
+        copy_to_clipboard(&secret)?;
+        self.clipboard_notice_until = Some(Instant::now() + Duration::from_secs(2));
+
+        Ok(())
     }
 
     async fn selected_secret(&self, source: &dyn SecretSource) -> Result<String> {
