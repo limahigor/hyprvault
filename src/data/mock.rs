@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use color_eyre::Result;
 
 use crate::{
-    app::state::{SecretCollection, SecretItem},
+    app::state::{SecretAttribute, SecretCollection, SecretItem},
     data::source::SecretSource,
 };
 
@@ -33,8 +33,17 @@ impl SecretSource for MockSecretSource {
                 name: String::from("GitHub Token"),
                 kind: String::from("API Token"),
                 source: String::from("mock/local"),
-                updated_at: String::from("2026-03-06"),
-                tags: vec![String::from("dev"), String::from("git")],
+                updated_at: String::from("2026-03-06 09:30"),
+                attributes: vec![
+                    SecretAttribute {
+                        key: String::from("account"),
+                        value: String::from("higor"),
+                    },
+                    SecretAttribute {
+                        key: String::from("service"),
+                        value: String::from("github.com"),
+                    },
+                ],
             }],
             "mock://infrastructure" => vec![
                 SecretItem {
@@ -42,16 +51,34 @@ impl SecretSource for MockSecretSource {
                     name: String::from("AWS Dev"),
                     kind: String::from("Cloud Credential"),
                     source: String::from("mock/local"),
-                    updated_at: String::from("2026-03-01"),
-                    tags: vec![String::from("infra"), String::from("aws")],
+                    updated_at: String::from("2026-03-01 18:45"),
+                    attributes: vec![
+                        SecretAttribute {
+                            key: String::from("account"),
+                            value: String::from("dev-account"),
+                        },
+                        SecretAttribute {
+                            key: String::from("region"),
+                            value: String::from("us-east-1"),
+                        },
+                    ],
                 },
                 SecretItem {
                     collection_id: collection.id.clone(),
                     name: String::from("Database Staging"),
                     kind: String::from("Database Secret"),
                     source: String::from("mock/local"),
-                    updated_at: String::from("2026-02-27"),
-                    tags: vec![String::from("db"), String::from("staging")],
+                    updated_at: String::from("2026-02-27 14:10"),
+                    attributes: vec![
+                        SecretAttribute {
+                            key: String::from("host"),
+                            value: String::from("staging-db.internal"),
+                        },
+                        SecretAttribute {
+                            key: String::from("username"),
+                            value: String::from("staging_user"),
+                        },
+                    ],
                 },
             ],
             _ => Vec::new(),

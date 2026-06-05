@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use async_trait::async_trait;
 use chrono::{DateTime, Local};
 use color_eyre::Result;
@@ -5,7 +7,7 @@ use secret_service::{EncryptionType, SecretService};
 use zbus::zvariant::OwnedObjectPath;
 
 use crate::{
-    app::state::{SecretCollection, SecretItem},
+    app::state::{SecretAttribute, SecretCollection, SecretItem},
     data::source::SecretSource,
 };
 
@@ -49,6 +51,9 @@ impl SecretSource for SecretServiceSource {
         let secret_items = secret_collection.get_all_items().await?;
 
         for secret_item in secret_items {
+            let raw_attributes = secret_item.get_attributes().await?;
+            let attributes = presentable_attributes(raw_attributes);
+
             items.push(SecretItem {
                 collection_id: collection.id.clone(),
                 name: secret_item.get_label().await?,
@@ -62,10 +67,39 @@ impl SecretSource for SecretServiceSource {
                             .to_string()
                     })
                     .unwrap_or_else(|| String::from("unknown")),
-                tags: vec![],
+                attributes,
             });
         }
 
         Ok(items)
     }
+}
+
+fn presentable_attributes(raw_attributes: HashMap<String, String>) -> Vec<SecretAttribute> {
+    const PRIORITY_KEYS: [&str; 9] = [
+        "service",
+        "username",
+        "login",
+        "user",
+        "account",
+        "token",
+        "tokenkey",
+        "host",
+        "application",
+    ];
+
+    let mut selected = Vec::new();
+
+    for key in PRIORITY_KEYS {
+        if let Some(value) = raw_attributes.get(key)
+            && !value.is_empty()
+        {
+            selected.push(SecretAttribute {
+                key: String::from(key),
+                value: value.clone(),
+            });
+        }
+    }
+
+    selected
 }

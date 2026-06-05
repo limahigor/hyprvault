@@ -10,13 +10,19 @@ pub struct SecretCollection {
 }
 
 #[derive(Clone, Debug, Default)]
+pub struct SecretAttribute {
+    pub key: String,
+    pub value: String,
+}
+
+#[derive(Clone, Debug, Default)]
 pub struct SecretItem {
     pub collection_id: String,
     pub name: String,
     pub kind: String,
     pub source: String,
     pub updated_at: String,
-    pub tags: Vec<String>,
+    pub attributes: Vec<SecretAttribute>,
 }
 
 #[derive(Debug)]

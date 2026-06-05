@@ -158,12 +158,23 @@ pub fn render(frame: &mut Frame, app: &App) {
                 Span::raw(item.updated_at.as_str()),
             ]),
             Line::from(""),
-            Line::from(vec![
-                Span::styled("tags", Style::default().fg(Color::DarkGray)),
-                Span::raw("  "),
-                Span::styled(item.tags.join(" • "), Style::default().fg(Color::Cyan)),
-            ]),
+            Line::from(Span::styled(
+                "attributes",
+                Style::default()
+                    .fg(Color::DarkGray)
+                    .add_modifier(Modifier::BOLD),
+            )),
+            Line::from(""),
         ]
+        .into_iter()
+        .chain(item.attributes.iter().map(|attribute| {
+            Line::from(vec![
+                Span::styled(attribute.key.as_str(), Style::default().fg(Color::DarkGray)),
+                Span::raw("  "),
+                Span::styled(attribute.value.as_str(), Style::default().fg(Color::Cyan)),
+            ])
+        }))
+        .collect()
     } else {
         vec![Line::from(Span::styled(
             "No secrets available",
