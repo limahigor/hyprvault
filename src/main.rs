@@ -11,8 +11,9 @@ use crossterm::{
     execute,
     terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
-use data::MockSecretSource;
 use ratatui::{Terminal, backend::CrosstermBackend};
+
+use crate::data::secret_service::SecretServiceSource;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -45,7 +46,7 @@ fn restore_terminal(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Re
 }
 
 async fn run_app(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Result<()> {
-    let source = MockSecretSource;
+    let source = SecretServiceSource;
     let mut app = App::new(&source).await?;
 
     loop {
@@ -56,6 +57,8 @@ async fn run_app(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Resul
         {
             match key.code {
                 KeyCode::Char('q') => break,
+                KeyCode::Char('h') | KeyCode::Left => app.previous_collection(&source).await?,
+                KeyCode::Char('l') | KeyCode::Right => app.next_collection(&source).await?,
                 KeyCode::Down | KeyCode::Char('j') => app.next(),
                 KeyCode::Up | KeyCode::Char('k') => app.previous(),
                 _ => {}
