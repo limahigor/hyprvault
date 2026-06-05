@@ -1,6 +1,6 @@
 # HyprVault
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/OWNER/REPO?label=version&color=7aa2f7)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/limahigor/hyprvault?label=version&color=7aa2f7)
 
 Terminal-first secret browser for Secret Service on Hyprland and Wayland.
 
