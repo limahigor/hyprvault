@@ -15,7 +15,7 @@ Terminal-first secret browser for Secret Service on Hyprland and Wayland.
 
 ## 📸 Demo
 
-![Demo](./demo.gif)
+![Demo](./assets/demo.gif)
 
 ## 🚀 Quick Start
 
