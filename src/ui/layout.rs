@@ -157,6 +157,14 @@ pub fn render(frame: &mut Frame, app: &App) {
                 Span::raw("  "),
                 Span::raw(item.updated_at.as_str()),
             ]),
+            Line::from(vec![
+                Span::styled("secret", Style::default().fg(Color::DarkGray)),
+                Span::raw("  "),
+                Span::styled(
+                    item.secret_preview.as_str(),
+                    Style::default().fg(Color::Yellow),
+                ),
+            ]),
             Line::from(""),
             Line::from(Span::styled(
                 "attributes",

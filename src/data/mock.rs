@@ -34,6 +34,7 @@ impl SecretSource for MockSecretSource {
                 kind: String::from("API Token"),
                 source: String::from("mock/local"),
                 updated_at: String::from("2026-03-06 09:30"),
+                secret_preview: String::from("************"),
                 attributes: vec![
                     SecretAttribute {
                         key: String::from("account"),
@@ -52,6 +53,7 @@ impl SecretSource for MockSecretSource {
                     kind: String::from("Cloud Credential"),
                     source: String::from("mock/local"),
                     updated_at: String::from("2026-03-01 18:45"),
+                    secret_preview: String::from("************"),
                     attributes: vec![
                         SecretAttribute {
                             key: String::from("account"),
@@ -69,6 +71,7 @@ impl SecretSource for MockSecretSource {
                     kind: String::from("Database Secret"),
                     source: String::from("mock/local"),
                     updated_at: String::from("2026-02-27 14:10"),
+                    secret_preview: String::from("************"),
                     attributes: vec![
                         SecretAttribute {
                             key: String::from("host"),

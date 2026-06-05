@@ -22,6 +22,7 @@ pub struct SecretItem {
     pub kind: String,
     pub source: String,
     pub updated_at: String,
+    pub secret_preview: String,
     pub attributes: Vec<SecretAttribute>,
 }
 

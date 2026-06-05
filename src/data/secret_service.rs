@@ -67,6 +67,7 @@ impl SecretSource for SecretServiceSource {
                             .to_string()
                     })
                     .unwrap_or_else(|| String::from("unknown")),
+                secret_preview: String::from("************"),
                 attributes,
             });
         }
