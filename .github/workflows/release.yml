@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build release binary
+        run: cargo build --release --locked
+
+      - name: Package release
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version="${GITHUB_REF_NAME#v}"
+          package_root="hyprvault_${version}_linux_x86_64"
+
+          mkdir -p "$package_root"
+          install -Dm755 "target/release/hyprvault" "$package_root/hyprvault"
+
+          if [ -f README.md ]; then
+            cp README.md "$package_root/README.md"
+          fi
+
+          if [ -f LICENSE ]; then
+            cp LICENSE "$package_root/LICENSE"
+          elif [ -f LICENSE.md ]; then
+            cp LICENSE.md "$package_root/LICENSE.md"
+          fi
+
+          tar -czf "${package_root}.tar.gz" "$package_root"
+          sha256sum "${package_root}.tar.gz" > "${package_root}.tar.gz.sha256"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            hyprvault_${{ github.ref_name }}_linux_x86_64.tar.gz
+            hyprvault_${{ github.ref_name }}_linux_x86_64.tar.gz.sha256
