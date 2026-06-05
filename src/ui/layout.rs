@@ -214,6 +214,10 @@ pub fn render(frame: &mut Frame, app: &App) {
         Span::styled(" collections  ", Style::default().fg(Color::DarkGray)),
         Span::styled("j/k", Style::default().fg(Color::White)),
         Span::styled(" items  ", Style::default().fg(Color::DarkGray)),
+        Span::styled("s", Style::default().fg(Color::White)),
+        Span::styled(" show secret  ", Style::default().fg(Color::DarkGray)),
+        Span::styled("c", Style::default().fg(Color::White)),
+        Span::styled(" copy secret  ", Style::default().fg(Color::DarkGray)),
         Span::styled("q", Style::default().fg(Color::White)),
         Span::styled(" quit", Style::default().fg(Color::DarkGray)),
     ]));
