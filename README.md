@@ -51,7 +51,7 @@ hyprvault
 
 ## 🗺️ Roadmap
 
-### v0.1.0 (Current)
+### v0.2.0 (Current)
 
 - [x] Browse non-empty Secret Service collections
 - [x] Inspect items in the selected collection
@@ -59,6 +59,7 @@ hyprvault
 - [x] Reveal and hide selected secrets
 - [x] Copy secrets with `wl-copy`
 - [x] Navigate with vim keys and arrows
+- [x] Add Omarchy theme integration
 
 ### 🚀 Next Release
 
@@ -70,7 +71,6 @@ hyprvault
 ### 🎨 Future
 
 - [ ] Create, edit, and delete secrets from the TUI
-- [ ] Add Omarchy theme integration
 - [ ] Support alternate clipboard backends
 - [ ] Add richer sorting and collection management flows
 
