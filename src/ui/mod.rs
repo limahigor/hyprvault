@@ -1,5 +1,6 @@
 pub mod layout;
 pub mod theme;
+pub mod themes;
 
 use ratatui::Frame;
 

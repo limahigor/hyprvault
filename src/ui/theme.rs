@@ -27,41 +27,6 @@ pub struct Theme {
     pub attribute_value: Color,
 }
 
-pub fn hypr_theme() -> Theme {
-    Theme {
-        app_bg: Color::Rgb(15, 17, 21),
-        panel_bg: Color::Rgb(22, 25, 31),
-        panel_border: Color::Rgb(46, 52, 64),
-        panel_border_active: Color::Rgb(67, 153, 167),
-
-        title: Color::Rgb(232, 237, 243),
-        subtitle: Color::Rgb(140, 151, 164),
-        text: Color::Rgb(213, 220, 228),
-        text_muted: Color::Rgb(140, 151, 164),
-        text_dim: Color::Rgb(90, 102, 117),
-
-        accent: Color::Rgb(67, 153, 167),
-        accent_soft: Color::Rgb(47, 114, 125),
-
-        success_bg: Color::Rgb(30, 68, 77),
-        success_badge_bg: Color::Rgb(67, 153, 167),
-        success_badge_fg: Color::Black,
-        success_text_fg: Color::Rgb(215, 240, 245),
-
-        warning: Color::Rgb(225, 175, 105),
-
-        masked_secret: Color::Rgb(200, 150, 90),
-        revealed_secret: Color::Rgb(67, 153, 167),
-        revealed_secret_bg: Color::Rgb(22, 38, 43),
-
-        selected_fg: Color::Rgb(255, 255, 255),
-        selected_bg: Color::Rgb(37, 47, 56),
-
-        value: Color::Rgb(200, 210, 220),
-        attribute_value: Color::Rgb(115, 185, 195),
-    }
-}
-
 pub fn screen_style(theme: &Theme) -> Style {
     Style::default().bg(theme.app_bg)
 }
@@ -192,13 +157,6 @@ pub fn footer_key_style(theme: &Theme) -> Style {
 
 pub fn footer_hint_style(theme: &Theme) -> Style {
     Style::default().fg(theme.text_muted).bg(theme.panel_bg)
-}
-
-pub fn footer_status_style(theme: &Theme) -> Style {
-    Style::default()
-        .fg(theme.accent)
-        .bg(theme.panel_bg)
-        .add_modifier(Modifier::BOLD)
 }
 
 pub fn warning_style(theme: &Theme) -> Style {

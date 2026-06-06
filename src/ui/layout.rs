@@ -7,25 +7,27 @@ use ratatui::{
     },
 };
 
-use crate::app::{
-    App,
-    state::{SecretAttribute, SecretItem},
+use crate::{
+    app::{
+        App,
+        state::{SecretAttribute, SecretItem},
+    },
+    ui::themes::load_theme,
 };
 
 use super::theme::{
     Theme, attribute_value_style, dim_text_style, empty_state_style, footer_hint_style,
-    footer_key_style, footer_status_style, header_meta_style, header_style, header_subtitle_style,
-    header_title_style, header_version_style, hypr_theme, masked_secret_style, panel_border_style,
-    panel_style, panel_title_style, revealed_secret_style, screen_style, secondary_text_style,
-    selected_item_style, success_badge_style, success_text_style, text_style, value_style,
-    warning_style,
+    footer_key_style, header_meta_style, header_style, header_subtitle_style, header_title_style,
+    header_version_style, masked_secret_style, panel_border_style, panel_style, panel_title_style,
+    revealed_secret_style, screen_style, secondary_text_style, selected_item_style,
+    success_badge_style, success_text_style, text_style, value_style, warning_style,
 };
 
 const ITEM_NAME_MAX_CHARS: usize = 28;
 const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn render(frame: &mut Frame, app: &App) {
-    let theme = hypr_theme();
+    let theme = load_theme();
     let root = frame.area();
 
     frame.render_widget(Block::default().style(screen_style(&theme)), root);
@@ -381,10 +383,6 @@ fn list_item(line: Line<'static>, theme: &Theme) -> ListItem<'static> {
 }
 
 fn panel_space(theme: &Theme, value: &str) -> Span<'static> {
-    Span::styled(value.to_string(), panel_style(theme))
-}
-
-fn footer_space(theme: &Theme, value: &str) -> Span<'static> {
     Span::styled(value.to_string(), panel_style(theme))
 }
 
