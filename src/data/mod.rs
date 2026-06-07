@@ -1,3 +1,4 @@
+pub mod demo;
 pub mod secret_service;
 pub mod source;
 

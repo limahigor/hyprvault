@@ -13,7 +13,7 @@ use crossterm::{
 };
 use ratatui::{Terminal, backend::CrosstermBackend};
 
-use crate::data::{SecretSource, secret_service::SecretServiceSource};
+use crate::data::{SecretSource, demo::DemoSecretSource, secret_service::SecretServiceSource};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -46,6 +46,11 @@ fn restore_terminal(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Re
 }
 
 async fn run_app(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Result<()> {
+    if std::env::args().any(|argument| argument == "--demo") {
+        let source = DemoSecretSource;
+        return run_app_with_source(terminal, &source).await;
+    }
+
     let source = SecretServiceSource;
     run_app_with_source(terminal, &source).await
 }
